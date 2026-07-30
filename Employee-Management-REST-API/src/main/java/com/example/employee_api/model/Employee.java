@@ -5,14 +5,18 @@ public class Employee {
     private String name;
     private String email;
     private String department;
+    private double salary;
+    private Integer phoneNumber;
 
     public Employee() {
     }
-    public Employee(Long id, String name, String email, String department) {
+    public Employee(Long id, String name, String email, String department, double salary, Integer phoneNumber) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.department = department;
+        this.salary = salary;
+        this.phoneNumber = phoneNumber;
     }
 
     public Long getId() {
@@ -45,5 +49,21 @@ public class Employee {
 
     public void setDepartment(String department) {
         this.department = department;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
+
+    public Integer getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(Integer phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }
