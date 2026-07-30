@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class EmployeeManagementRestApiApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(EmployeeManagementRestApiApplication.class, args);
+
+        SpringApplication.run(EmployeeManagementRestApiApplication.class, args);
 	}
 
 }
