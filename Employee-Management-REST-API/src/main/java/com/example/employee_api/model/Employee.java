@@ -1,25 +1,25 @@
 package com.example.employee_api.model;
 
 public class Employee {
-    private long id;
+    private Long id;
     private String name;
     private String email;
     private String department;
 
     public Employee() {
     }
-    public Employee(long id, String name, String email, String department) {
+    public Employee(Long id, String name, String email, String department) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.department = department;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
