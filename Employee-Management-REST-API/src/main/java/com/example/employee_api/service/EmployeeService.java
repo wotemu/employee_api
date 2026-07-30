@@ -21,6 +21,11 @@ public class EmployeeService {
                 .orElse(null);
     }
 
+    public Employee addEmployee(Employee employee) {
+        employees.add(employee);
+        return employee;
+    }
+
     public Employee updateEmployee(Long id, Employee updateEmployee){
         Employee employee = getEmployee(id);
 
