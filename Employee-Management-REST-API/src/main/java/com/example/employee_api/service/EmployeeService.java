@@ -33,6 +33,8 @@ public class EmployeeService {
             employee.setName(updateEmployee.getName());
             employee.setEmail(updateEmployee.getEmail());
             employee.setDepartment(updateEmployee.getDepartment());
+            employee.setSalary(updateEmployee.getSalary());
+            employee.setPhoneNumber(updateEmployee.getPhoneNumber());
         }
         return employee;
     }
