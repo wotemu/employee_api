@@ -25,6 +25,16 @@ public class EmployeeController {
         return service.getEmployee(id);
     }
 
+    @GetMapping("/department/{department}")
+    public List<Employee> getEmployeesByDepartment(@PathVariable String department){
+        return service.employeeByDepartment(department);
+    }
+
+    @GetMapping("/email/{email}")
+    public List<Employee> getEmployeesByEmail(@PathVariable String email){
+        return service.employeeByEmail(email);
+    }
+
     @PostMapping
     public Employee createEmployee(@RequestBody Employee employee){
         return service.addEmployee(employee);

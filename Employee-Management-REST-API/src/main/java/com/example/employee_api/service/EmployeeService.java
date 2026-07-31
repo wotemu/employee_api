@@ -21,6 +21,16 @@ public class EmployeeService {
                 .orElse(null);
     }
 
+    public List<Employee> employeeByDepartment(String department) {
+        return employees.stream()
+                .filter(e -> e.getDepartment().equalsIgnoreCase(department)).toList();
+    }
+
+    public List<Employee> employeeByEmail(String email) {
+        return  employees.stream()
+                .filter(e -> e.getEmail().equalsIgnoreCase(email)).toList();
+    }
+
     public Employee addEmployee(Employee employee) {
         employees.add(employee);
         return employee;
