@@ -1,55 +1,57 @@
 package com.example.employee_api.service;
 
 import com.example.employee_api.model.Employee;
+import com.example.employee_api.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class EmployeeService {
-    private List<Employee> employees = new ArrayList<>();
 
-    public List<Employee> getALLEmployees() {
-        return employees;
+    private final EmployeeRepository repository;
+
+    public EmployeeService(EmployeeRepository repository) {
+        this.repository = repository;
+    }
+
+    public List<Employee> getAllEmployees() {
+        return repository.findAll();
     }
 
     public Employee getEmployee(Long id) {
-        return employees.stream()
-                .filter(e -> e.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+        return repository.findById(id).orElse(null);
     }
 
     public List<Employee> employeeByDepartment(String department) {
-        return employees.stream()
-                .filter(e -> e.getDepartment().equalsIgnoreCase(department)).toList();
+        return repository.findByDepartment(department);
     }
 
-    public List<Employee> employeeByEmail(String email) {
-        return  employees.stream()
-                .filter(e -> e.getEmail().equalsIgnoreCase(email)).toList();
+    public Employee employeeByEmail(String email) {
+        return repository.findByEmail(email);
     }
 
     public Employee addEmployee(Employee employee) {
-        employees.add(employee);
-        return employee;
+        return repository.save(employee);
     }
 
-    public Employee updateEmployee(Long id, Employee updateEmployee){
-        Employee employee = getEmployee(id);
+    public Employee updateEmployee(Long id, Employee updatedEmployee) {
+        Employee employee = repository.findById(id).orElse(null);
 
-        if (employee != null){
-            employee.setName(updateEmployee.getName());
-            employee.setEmail(updateEmployee.getEmail());
-            employee.setDepartment(updateEmployee.getDepartment());
-            employee.setSalary(updateEmployee.getSalary());
-            employee.setPhoneNumber(updateEmployee.getPhoneNumber());
+        if (employee == null) {
+            return null;
         }
-        return employee;
+
+        employee.setName(updatedEmployee.getName());
+        employee.setEmail(updatedEmployee.getEmail());
+        employee.setDepartment(updatedEmployee.getDepartment());
+        employee.setSalary(updatedEmployee.getSalary());
+        employee.setPhoneNumber(updatedEmployee.getPhoneNumber());
+
+        return repository.save(employee);
     }
 
-    public void deleteEmployee(Long id){
-        employees.removeIf(e -> e.getId().equals(id));
+    public void deleteEmployee(Long id) {
+        repository.deleteById(id);
     }
 }

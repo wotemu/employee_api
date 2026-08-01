@@ -17,7 +17,7 @@ public class EmployeeController {
 
     @GetMapping
     public List<Employee> getEmployees(){
-        return service.getALLEmployees();
+        return service.getAllEmployees();
     }
 
     @GetMapping("/{id}")
@@ -31,7 +31,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/email/{email}")
-    public List<Employee> getEmployeesByEmail(@PathVariable String email){
+    public Employee getEmployeeByEmail(@PathVariable String email){
         return service.employeeByEmail(email);
     }
 
