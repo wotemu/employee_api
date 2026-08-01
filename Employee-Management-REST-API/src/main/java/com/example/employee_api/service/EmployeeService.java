@@ -30,6 +30,9 @@ public class EmployeeService {
     public Employee employeeByEmail(String email) {
         return repository.findByEmail(email);
     }
+    public List<Employee> employeeByDepartmentAndSalaryGreaterThan(String department, Double salary) {
+        return repository.findByDepartmentAndSalaryGreaterThan(department, salary);
+    }
 
     public Employee addEmployee(Employee employee) {
         return repository.save(employee);

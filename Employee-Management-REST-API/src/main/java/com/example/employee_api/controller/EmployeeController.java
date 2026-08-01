@@ -2,6 +2,7 @@ package com.example.employee_api.controller;
 
 import com.example.employee_api.model.Employee;
 import com.example.employee_api.service.EmployeeService;
+import jakarta.websocket.server.PathParam;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +34,11 @@ public class EmployeeController {
     @GetMapping("/email/{email}")
     public Employee getEmployeeByEmail(@PathVariable String email){
         return service.employeeByEmail(email);
+    }
+
+    @GetMapping("/search")
+    public List<Employee>  getEmployeesByDepartmentAndSalary(@RequestParam() String department, @RequestParam Double salary){
+        return service.employeeByDepartmentAndSalaryGreaterThan(department, salary);
     }
 
     @PostMapping
