@@ -4,6 +4,7 @@ import com.example.employee_api.dto.EmployeeDTO;
 import com.example.employee_api.model.Employee;
 import com.example.employee_api.service.EmployeeService;
 import jakarta.websocket.server.PathParam;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,5 +56,15 @@ public class EmployeeController {
     @DeleteMapping("/{id}")
     public void deleteEmployee(@PathVariable Long id){
         service.deleteEmployee(id);
+    }
+
+    @GetMapping
+    public Page<Employee> getEmployees(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+
+        return service.getEmployees(page, size, sortBy, direction);
     }
 }

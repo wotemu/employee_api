@@ -5,6 +5,10 @@ import com.example.employee_api.dto.EmployeeMapper;
 import com.example.employee_api.exception.EmployeeNotFoundException;
 import com.example.employee_api.model.Employee;
 import com.example.employee_api.repository.EmployeeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,5 +68,21 @@ public class EmployeeService {
 
     public void deleteEmployee(Long id) {
         repository.deleteById(id);
+    }
+
+    // <---pagination and sorting -->
+    public Page<Employee> getEmployees(
+            int page,
+            int size,
+            String sortBy,
+            String direction) {
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return repository.findAll(pageable);
     }
 }
