@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class EmployeeService {
     public Employee addEmployee(Employee employee) {
         return repository.save(employee);
     }
-
+    @Transactional
     public Employee updateEmployee(Long id, Employee updatedEmployee) {
         Employee employee = repository.findById(id).orElse(null);
 
