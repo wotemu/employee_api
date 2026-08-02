@@ -6,11 +6,11 @@ public class EmployeeDTO {
     private String email;
     private String department;
     private double salary;
-    private Integer phoneNumber;
+    private String phoneNumber;
 
     public EmployeeDTO() {
     }
-    public EmployeeDTO(Long id, String name, String email, String department, double salary, Integer phoneNumber) {
+    public EmployeeDTO(Long id, String name, String email, String department, double salary, String phoneNumber) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -59,11 +59,11 @@ public class EmployeeDTO {
         this.salary = salary;
     }
 
-    public Integer getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Integer phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 }
