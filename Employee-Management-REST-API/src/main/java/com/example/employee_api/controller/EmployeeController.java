@@ -1,5 +1,6 @@
 package com.example.employee_api.controller;
 
+import com.example.employee_api.dto.EmployeeDTO;
 import com.example.employee_api.model.Employee;
 import com.example.employee_api.service.EmployeeService;
 import jakarta.websocket.server.PathParam;
@@ -22,8 +23,8 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public Employee getEmployee(@PathVariable Long id){
-        return service.getEmployee(id);
+    public EmployeeDTO getEmployee(@PathVariable Long id) {
+        return service.getEmployeeDTO(id);
     }
 
     @GetMapping("/department/{department}")

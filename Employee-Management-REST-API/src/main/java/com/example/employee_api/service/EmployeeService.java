@@ -1,5 +1,7 @@
 package com.example.employee_api.service;
 
+import com.example.employee_api.dto.EmployeeDTO;
+import com.example.employee_api.dto.EmployeeMapper;
 import com.example.employee_api.model.Employee;
 import com.example.employee_api.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
@@ -10,17 +12,22 @@ import java.util.List;
 public class EmployeeService {
 
     private final EmployeeRepository repository;
+    private final EmployeeMapper mapper;
 
-    public EmployeeService(EmployeeRepository repository) {
+    public EmployeeService(EmployeeRepository repository, EmployeeMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     public List<Employee> getAllEmployees() {
         return repository.findAll();
     }
 
-    public Employee getEmployee(Long id) {
-        return repository.findById(id).orElse(null);
+    public EmployeeDTO getEmployeeDTO(Long id) {
+        Employee employee = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        return mapper.toDTO(employee);
     }
 
     public List<Employee> employeeByDepartment(String department) {
