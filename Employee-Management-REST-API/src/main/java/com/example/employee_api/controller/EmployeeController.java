@@ -4,6 +4,8 @@ import com.example.employee_api.dto.EmployeeDTO;
 import com.example.employee_api.model.Employee;
 import com.example.employee_api.service.EmployeeService;
 import jakarta.websocket.server.PathParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +15,8 @@ import java.util.List;
 @RequestMapping("/employees")
 public class EmployeeController {
     private final EmployeeService service;
+    private static final Logger logger =
+            LoggerFactory.getLogger(EmployeeController.class);
 
     public EmployeeController(EmployeeService service) {
         this.service = service;
@@ -25,6 +29,8 @@ public class EmployeeController {
 
     @GetMapping("/{id}")
     public EmployeeDTO getEmployee(@PathVariable Long id) {
+        logger.info("GET /employees/{}", id);
+
         return service.getEmployeeDTO(id);
     }
 
