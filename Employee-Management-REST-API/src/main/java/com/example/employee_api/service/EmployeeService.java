@@ -1,7 +1,7 @@
 package com.example.employee_api.service;
 
 import com.example.employee_api.dto.EmployeeDTO;
-import com.example.employee_api.dto.EmployeeMapper;
+import com.example.employee_api.mapper.EmployeeMapper;
 import com.example.employee_api.exception.EmployeeNotFoundException;
 import com.example.employee_api.model.Employee;
 import com.example.employee_api.repository.EmployeeRepository;

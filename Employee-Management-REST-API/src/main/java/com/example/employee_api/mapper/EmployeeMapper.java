@@ -1,5 +1,6 @@
-package com.example.employee_api.dto;
+package com.example.employee_api.mapper;
 
+import com.example.employee_api.dto.EmployeeDTO;
 import com.example.employee_api.model.Employee;
 import org.springframework.stereotype.Component;
 
