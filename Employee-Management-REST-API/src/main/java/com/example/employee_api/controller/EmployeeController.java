@@ -3,7 +3,6 @@ package com.example.employee_api.controller;
 import com.example.employee_api.dto.EmployeeDTO;
 import com.example.employee_api.model.Employee;
 import com.example.employee_api.service.EmployeeService;
-import jakarta.websocket.server.PathParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -22,10 +21,10 @@ public class EmployeeController {
         this.service = service;
     }
 
-    @GetMapping
-    public List<Employee> getEmployees(){
-        return service.getAllEmployees();
-    }
+   // @GetMapping
+    //public List<Employee> getEmployees(){
+      //  return service.getAllEmployees();
+    //}
 
     @GetMapping("/{id}")
     public EmployeeDTO getEmployee(@PathVariable Long id) {
