@@ -1,6 +1,7 @@
 package com.example.employee_api.service;
 
 import com.example.employee_api.dto.EmployeeDTO;
+import com.example.employee_api.exception.ResourceNotFoundException;
 import com.example.employee_api.mapper.EmployeeMapper;
 import com.example.employee_api.exception.EmployeeNotFoundException;
 import com.example.employee_api.model.Employee;
@@ -22,7 +23,7 @@ public class EmployeeService {
     private final EmployeeRepository repository;
     private final EmployeeMapper mapper;
 
-    private static final Logger logger =
+    private static final Logger log =
             LoggerFactory.getLogger(EmployeeService.class);
 
     public EmployeeService(EmployeeRepository repository, EmployeeMapper mapper) {
@@ -36,7 +37,8 @@ public class EmployeeService {
 
     public EmployeeDTO getEmployeeDTO(Long id) {
         Employee employee = repository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Employee not found with id: " + id));
 
         return mapper.toDTO(employee);
     }
@@ -55,11 +57,11 @@ public class EmployeeService {
 
     public Employee addEmployee(Employee employee) {
 
-        logger.info("Creating employee with email: {}", employee.getEmail());
+        log.info("Creating employee with email: {}", employee.getEmail());
 
         Employee savedEmployee = repository.save(employee);
 
-        logger.info("Employee created successfully with id: {}", savedEmployee.getId());
+        log.info("Employee created successfully with id: {}", savedEmployee.getId());
 
         return savedEmployee;
     }
@@ -67,10 +69,11 @@ public class EmployeeService {
     @Transactional
     public Employee updateEmployee(Long id, Employee updatedEmployee) {
 
-        logger.info("Updating employee with id: {}", id);
+        log.info("Updating employee with id: {}", id);
 
         Employee employee = repository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Employee not found with id: " + id));
 
         employee.setName(updatedEmployee.getName());
         employee.setEmail(updatedEmployee.getEmail());
@@ -80,7 +83,7 @@ public class EmployeeService {
 
         repository.save(employee);
 
-        logger.info("Employee updated successfully.");
+        log.info("Employee updated successfully.");
 
         return employee;
     }
