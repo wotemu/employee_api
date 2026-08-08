@@ -3,6 +3,7 @@ package com.example.employee_api.controller;
 import com.example.employee_api.dto.EmployeeDTO;
 import com.example.employee_api.model.Employee;
 import com.example.employee_api.service.EmployeeService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/employees")
+@SecurityRequirement(name = "bearerAuth")
 public class EmployeeController {
     private final EmployeeService service;
     private static final Logger logger =
