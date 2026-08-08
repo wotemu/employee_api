@@ -2,6 +2,7 @@ package com.example.employee_api.config;
 
 import com.example.employee_api.security.CustomUserDetailsService;
 import com.example.employee_api.security.JwtAuthenticationFilter;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableConfigurationProperties(JwtProperties.class)
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
