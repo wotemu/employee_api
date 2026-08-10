@@ -7,10 +7,10 @@ import com.example.employee_api.dto.RegisterRequest;
 import com.example.employee_api.model.Role;
 import com.example.employee_api.model.User;
 import com.example.employee_api.repository.UserRepository;
-import com.example.employee_api.security.CustomUserDetailsService;
 import com.example.employee_api.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,21 +24,17 @@ public class AuthenticationController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final CustomUserDetailsService customUserDetailsService;
-
 
     public AuthenticationController(
             UserRepository repository,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
-            JwtService jwtService,
-            CustomUserDetailsService customUserDetailsService) {
+            JwtService jwtService) {
 
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
-        this.customUserDetailsService = customUserDetailsService;
     }
 
     @PostMapping("/auth/register")
@@ -62,16 +58,19 @@ public class AuthenticationController {
     public AuthenticationResponse login(
             @RequestBody LoginRequest request) {
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()));
+        Authentication authentication =
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                request.getUsername(),
+                                request.getPassword()
+                        )
+                );
 
         UserDetails userDetails =
-                customUserDetailsService.loadUserByUsername(
-                        request.getUsername());
+                (UserDetails) authentication.getPrincipal();
 
-        String token = jwtService.generateToken(userDetails);
+        String token =
+                jwtService.generateToken(userDetails);
 
         return new AuthenticationResponse(token);
     }

@@ -34,6 +34,8 @@ public class GlobalExceptionHandler {
             Exception ex,
             HttpServletRequest request) {
 
+        ex.printStackTrace();
+
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),

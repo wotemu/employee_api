@@ -24,34 +24,52 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
-    private final CustomUserDetailsService customUserDetailsService;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtFilter, CustomUserDetailsService customUserDetailsService) {
-
+    public SecurityConfig(JwtAuthenticationFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
-        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Bean
-    PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+    AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config) throws Exception {
 
         return config.getAuthenticationManager();
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    AuthenticationProvider authenticationProvider(
+            CustomUserDetailsService service,
+            PasswordEncoder passwordEncoder) {
+
+        DaoAuthenticationProvider provider =
+                new DaoAuthenticationProvider();
+
+        provider.setUserDetailsService(service);
+        provider.setPasswordEncoder(passwordEncoder);
+
+        return provider;
+    }
+
+    @Bean
+    SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            AuthenticationProvider authenticationProvider) throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
+
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS))
+
                 .authorizeHttpRequests(auth -> auth
+
+                        // Public endpoints
                         .requestMatchers(
                                 "/auth/**",
                                 "/h2-console/**",
@@ -62,43 +80,50 @@ public class SecurityConfig {
                                 "/actuator/info"
                         )
                         .permitAll()
+
+                        // USER + ADMIN
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/employees/**")
-                        .hasAnyRole("USER","ADMIN")
+                                "/employees/**"
+                        )
+                        .hasAnyRole("USER", "ADMIN")
+
+                        // ADMIN only
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/employees/**")
+                                "/employees/**"
+                        )
                         .hasRole("ADMIN")
+
                         .requestMatchers(
                                 HttpMethod.PUT,
-                                "/employees/**")
-
+                                "/employees/**"
+                        )
                         .hasRole("ADMIN")
+
                         .requestMatchers(
                                 HttpMethod.DELETE,
-                                "/employees/**")
-
+                                "/employees/**"
+                        )
                         .hasRole("ADMIN")
-                        .anyRequest()
-                        .authenticated())
-                .authenticationProvider(authenticationProvider(customUserDetailsService))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
+                        // Everything else
+                        .anyRequest()
+                        .authenticated()
+                )
+
+                .authenticationProvider(authenticationProvider)
+
+                .addFilterBefore(
+                        jwtFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
+
+        // Required for H2 console
         http.headers(headers ->
                 headers.frameOptions(frame ->
                         frame.disable()));
 
         return http.build();
     }
-
-    @Bean
-    AuthenticationProvider authenticationProvider(CustomUserDetailsService service){
-        DaoAuthenticationProvider provider =  new DaoAuthenticationProvider();
-        provider.setUserDetailsService(service);
-        provider.setPasswordEncoder(passwordEncoder());
-
-        return provider;
-    }
-
 }
