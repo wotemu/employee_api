@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -142,5 +143,159 @@ class EmployeeApiIntegrationTest {
                                 .with(user("testuser").roles("USER"))
                 )
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldAllowAdminToGetEmployees() throws Exception {
+
+        mockMvc.perform(
+                        get("/employees")
+                                .with(user("admin").roles("ADMIN"))
+                )
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldRejectUnauthenticatedUserWhenGettingEmployees() throws Exception {
+
+        mockMvc.perform(
+                        get("/employees")
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldGetEmployeeById() throws Exception {
+
+        mockMvc.perform(
+                        get("/employees/1")
+                                .with(user("user").roles("USER"))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    void shouldReturn404WhenEmployeeDoesNotExist() throws Exception {
+
+        mockMvc.perform(
+                        get("/employees/9999")
+                                .with(user("user").roles("USER"))
+                )
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldAllowAdminToUpdateEmployee() throws Exception {
+
+        String requestBody = """
+        {
+            "name": "Updated Employee",
+            "email": "updated@test.com",
+            "department": "Engineering",
+            "salary": 6000,
+            "phoneNumber": "0405555555"
+        }
+        """;
+
+        mockMvc.perform(
+                        put("/employees/1")
+                                .with(user("admin").roles("ADMIN"))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Updated Employee"))
+                .andExpect(jsonPath("$.email").value("updated@test.com"));
+    }
+
+    @Test
+    void shouldRejectUserWhenUpdatingEmployee() throws Exception {
+
+        String requestBody = """
+        {
+            "name": "Updated Employee",
+            "email": "updated@test.com",
+            "department": "Engineering",
+            "salary": 6000,
+            "phoneNumber": "0405555555"
+        }
+        """;
+
+        mockMvc.perform(
+                        put("/employees/1")
+                                .with(user("user").roles("USER"))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldRejectUnauthenticatedUserWhenUpdatingEmployee()
+            throws Exception {
+
+        String requestBody = """
+        {
+            "name": "Updated Employee",
+            "email": "updated@test.com",
+            "department": "Engineering",
+            "salary": 6000,
+            "phoneNumber": "0405555555"
+        }
+        """;
+
+        mockMvc.perform(
+                        put("/employees/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldReturn400WhenUpdatingEmployeeWithInvalidData()
+            throws Exception {
+
+        String requestBody = """
+        {
+            "name": "",
+            "email": "wrong-email",
+            "department": "",
+            "salary": -100,
+            "phoneNumber": ""
+        }
+        """;
+
+        mockMvc.perform(
+                        put("/employees/1")
+                                .with(user("admin").roles("ADMIN"))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturn404WhenUpdatingNonExistingEmployee()
+            throws Exception {
+
+        String requestBody = """
+        {
+            "name": "Updated Employee",
+            "email": "updated@test.com",
+            "department": "Engineering",
+            "salary": 6000,
+            "phoneNumber": "0405555555"
+        }
+        """;
+
+        mockMvc.perform(
+                        put("/employees/9999")
+                                .with(user("admin").roles("ADMIN"))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isNotFound());
     }
 }
