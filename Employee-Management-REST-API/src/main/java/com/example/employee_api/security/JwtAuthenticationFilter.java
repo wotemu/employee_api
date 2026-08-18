@@ -22,7 +22,7 @@ public class JwtAuthenticationFilter
     private final JwtService jwtService;
 
     private final CustomUserDetailsService userDetailsService;
-    private static final Logger logger =
+    private static final Logger log =
             LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     public JwtAuthenticationFilter(
@@ -40,9 +40,14 @@ public class JwtAuthenticationFilter
             FilterChain filterChain)
             throws ServletException, IOException {
 
+        log.debug("JWT filter processing {} {}",
+                request.getMethod(),
+                request.getRequestURI());
+
         String header = request.getHeader("Authorization");
 
         if (header == null || !header.startsWith("Bearer ")) {
+            log.debug("No Bearer token found");
             filterChain.doFilter(request, response);
             return;
         }
@@ -75,12 +80,14 @@ public class JwtAuthenticationFilter
                     SecurityContextHolder
                             .getContext()
                             .setAuthentication(auth);
+                    log.debug("JWT authentication successful for user {}",
+                            username);
                 }
             }
 
         } catch (Exception e) {
 
-            logger.warn(
+            log.warn(
                     "JWT authentication failed: {} - {}",
                     e.getClass().getSimpleName(),
                     e.getMessage());

@@ -7,7 +7,10 @@ import com.example.employee_api.dto.RegisterRequest;
 import com.example.employee_api.model.Role;
 import com.example.employee_api.model.User;
 import com.example.employee_api.repository.UserRepository;
+import com.example.employee_api.security.JwtAuthenticationFilter;
 import com.example.employee_api.security.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +28,9 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
+    private static final Logger log =
+            LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
     public AuthenticationController(
             UserRepository repository,
             PasswordEncoder passwordEncoder,
@@ -40,7 +46,7 @@ public class AuthenticationController {
     @PostMapping("/auth/register")
     public String register(@RequestBody RegisterRequest request) {
 
-        System.out.println(">>> REGISTER CALLED <<<");
+        log.info(">>> REGISTER CALLED <<<");
 
         User user = new User();
         user.setUsername(request.getUsername());
@@ -49,7 +55,7 @@ public class AuthenticationController {
 
         repository.save(user);
 
-        System.out.println(">>> USER SAVED <<<");
+        log.info(">>> USER SAVED <<<");
 
         return "User registered.";
     }

@@ -1,12 +1,16 @@
 package com.example.employee_api.controller;
 
 import com.example.employee_api.dto.EmployeeDTO;
+import com.example.employee_api.dto.EmployeeRequest;
+import com.example.employee_api.dto.PageResponse;
 import com.example.employee_api.model.Employee;
 import com.example.employee_api.service.EmployeeService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,27 +55,37 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public Employee createEmployee(@RequestBody Employee employee){
-        return service.addEmployee(employee);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Employee createEmployee(@Valid @RequestBody EmployeeRequest request) {
+        return service.addEmployee(request);
     }
-
     @PutMapping("/{id}")
-    public Employee updateEmployee(@RequestBody Employee employee, @PathVariable Long id){
+    public Employee updateEmployee(
+            @Valid @RequestBody Employee employee,
+            @PathVariable Long id) {
+
         return service.updateEmployee(id, employee);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteEmployee(@PathVariable Long id){
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
+
         service.deleteEmployee(id);
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
-    public Page<Employee> getEmployees(
+    public PageResponse<Employee> getEmployees(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction) {
 
-        return service.getEmployees(page, size, sortBy, direction);
+        return service.getEmployees(
+                page,
+                size,
+                sortBy,
+                direction);
     }
 }

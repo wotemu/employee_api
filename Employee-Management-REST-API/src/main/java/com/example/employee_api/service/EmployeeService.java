@@ -1,6 +1,8 @@
 package com.example.employee_api.service;
 
 import com.example.employee_api.dto.EmployeeDTO;
+import com.example.employee_api.dto.EmployeeRequest;
+import com.example.employee_api.dto.PageResponse;
 import com.example.employee_api.exception.ResourceNotFoundException;
 import com.example.employee_api.mapper.EmployeeMapper;
 import com.example.employee_api.exception.EmployeeNotFoundException;
@@ -55,13 +57,26 @@ public class EmployeeService {
     }
 
 
-    public Employee addEmployee(Employee employee) {
+    public Employee addEmployee(EmployeeRequest request) {
 
-        log.info("Creating employee with email: {}", employee.getEmail());
+        Employee employee = new Employee();
 
-        Employee savedEmployee = repository.save(employee);
+        employee.setName(request.getName());
+        employee.setEmail(request.getEmail());
+        employee.setDepartment(request.getDepartment());
+        employee.setSalary(request.getSalary());
+        employee.setPhoneNumber(request.getPhoneNumber());
 
-        log.info("Employee created successfully with id: {}", savedEmployee.getId());
+        log.info(
+                "Creating employee with email: {}",
+                request.getEmail());
+
+        Employee savedEmployee =
+                repository.save(employee);
+
+        log.info(
+                "Employee created successfully with id: {}",
+                savedEmployee.getId());
 
         return savedEmployee;
     }
@@ -89,12 +104,22 @@ public class EmployeeService {
     }
 
 
+    @Transactional
     public void deleteEmployee(Long id) {
-        repository.deleteById(id);
+
+        log.info("Deleting employee with id: {}", id);
+
+        Employee employee = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Employee not found with id: " + id));
+
+        repository.delete(employee);
+
+        log.info("Employee deleted successfully.");
     }
 
     // <---pagination and sorting -->
-    public Page<Employee> getEmployees(
+    public PageResponse<Employee> getEmployees(
             int page,
             int size,
             String sortBy,
@@ -104,8 +129,18 @@ public class EmployeeService {
                 ? Sort.by(sortBy).descending()
                 : Sort.by(sortBy).ascending();
 
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable =
+                PageRequest.of(page, size, sort);
 
-        return repository.findAll(pageable);
+        Page<Employee> employeePage =
+                repository.findAll(pageable);
+
+        return new PageResponse<>(
+                employeePage.getContent(),
+                employeePage.getNumber(),
+                employeePage.getSize(),
+                employeePage.getTotalElements(),
+                employeePage.getTotalPages()
+        );
     }
 }
