@@ -14,6 +14,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -72,14 +73,74 @@ class EmployeeApiIntegrationTest {
 
         mockMvc.perform(
                         post("/employees")
+                                .with(user("admin").roles("ADMIN"))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(request)
                 )
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.name").value("Name is required"))
-                .andExpect(jsonPath("$.email").value("Email must be valid"))
-                .andExpect(jsonPath("$.department").value("Department is required"))
-                .andExpect(jsonPath("$.salary").value("Salary must be greater than zero"))
-                .andExpect(jsonPath("$.phoneNumber").value("PhoneNumber is required"));
+                .andExpect(jsonPath("$.name")
+                        .value("Name is required"))
+                .andExpect(jsonPath("$.email")
+                        .value("Email must be valid"))
+                .andExpect(jsonPath("$.department")
+                        .value("Department is required"))
+                .andExpect(jsonPath("$.salary")
+                        .value("Salary must be greater than zero"))
+                .andExpect(jsonPath("$.phoneNumber")
+                        .value("Phone number must be 10 to 12 digits and may start with '+'"));
+    }
+
+    @Test
+    void shouldReturn403WhenUserTriesToCreateEmployee() throws Exception {
+
+        String requestBody = """
+        {
+            "name": "API Test",
+            "email": "user@test.com",
+            "department": "Engineering",
+            "salary": 5000,
+            "phoneNumber": "0405555555"
+        }
+        """;
+
+        mockMvc.perform(
+                        post("/employees")
+                                .with(user("testuser").roles("USER"))
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldReturn403WhenUnauthenticatedUserTriesToCreateEmployee() throws Exception {
+
+        String requestBody = """
+        {
+            "name": "API Test",
+            "email": "anonymous@test.com",
+            "department": "Engineering",
+            "salary": 5000,
+            "phoneNumber": "0405555555"
+        }
+        """;
+
+        mockMvc.perform(
+                        post("/employees")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldAllowUserToGetEmployees() throws Exception {
+
+        mockMvc.perform(
+                        get("/employees")
+                                .with(user("testuser").roles("USER"))
+                )
+                .andExpect(status().isOk());
     }
 }
