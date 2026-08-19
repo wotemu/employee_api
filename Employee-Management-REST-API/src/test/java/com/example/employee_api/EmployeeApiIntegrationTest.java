@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -295,6 +296,47 @@ class EmployeeApiIntegrationTest {
                                 .with(user("admin").roles("ADMIN"))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody)
+                )
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldAllowAdminToDeleteEmployee() throws Exception {
+
+        mockMvc.perform(
+                        delete("/employees/1")
+                                .with(user("admin").roles("ADMIN"))
+                )
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void shouldRejectUserWhenDeletingEmployee() throws Exception {
+
+        mockMvc.perform(
+                        delete("/employees/1")
+                                .with(user("user").roles("USER"))
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldRejectUnauthenticatedUserWhenDeletingEmployee()
+            throws Exception {
+
+        mockMvc.perform(
+                        delete("/employees/1")
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldReturn404WhenDeletingNonExistingEmployee()
+            throws Exception {
+
+        mockMvc.perform(
+                        delete("/employees/9999")
+                                .with(user("admin").roles("ADMIN"))
                 )
                 .andExpect(status().isNotFound());
     }
